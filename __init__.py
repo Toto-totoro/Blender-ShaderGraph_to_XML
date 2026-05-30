@@ -41,13 +41,15 @@ def register():
     from . import ui
     from . import exporter
     properties.register()
-    ui.register()
     exporter.register()
+    ui.register()
 
 def unregister():
     from . import properties
     from . import ui
+    from . import exporter
     properties.unregister()
+    exporter.unregister()
     ui.unregister()
 
 if __name__ == '__main__':

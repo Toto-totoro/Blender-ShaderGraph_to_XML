@@ -2,7 +2,6 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, EnumProperty
 from bpy.types import Operator
-from ui import menu_export_button
 
 # List of all materials in file
 def get_materials():
@@ -24,4 +23,8 @@ class ExportShaderGraph(bpy.types.Operator, ExportHelper):
     
 def register():
     bpy.utils.register_class(ExportShaderGraph)
-    bpy.types.TOPBAR_MT_file_export.append(menu_export_button)
+
+
+def unregister():
+    bpy.utils.unregister_class(ExportShaderGraph)
+    

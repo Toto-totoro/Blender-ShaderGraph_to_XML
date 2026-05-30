@@ -28,7 +28,7 @@ def menu_export_button(self, context):
     self.layout.operator(ExportShaderGraph.bl_idname, text="ShaderGraph (.xml)")
 
 def register():
-    bpy.utils.register_class(MyPanel)
+    bpy.types.TOPBAR_MT_file_export.append(menu_export_button)
 
 def unregister():
-    bpy.utils.unregister_class(MyPanel)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_export_button)
