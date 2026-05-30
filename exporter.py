@@ -17,59 +17,67 @@
 
 import bpy
 from bpy_extras.io_utils import ExportHelper
-from bpy.props import StringProperty, EnumProperty
+from bpy.props import StringProperty, BoolProperty
 from bpy.types import Operator
 
 # List of all materials in file
-def get_materials_callback(self, context):
-    items = [("ALL", "All Materials", "Export every material in the file")]
-    for material in bpy.data.materials:
-        items.append((material.name, material.name, f"Export {material.name}"))
-    return items
+#def get_materials_callback(self, context):
+#    items = [("ALL", "All Materials", "Export every material in the file")]
+#    for material in bpy.data.materials:
+#        items.append((material.name, material.name, f"Export {material.name}"))
+#    return items
 
 class ExportShaderGraph(bpy.types.Operator, ExportHelper):
     bl_idname = "export.shadergraph"
     bl_label = "Export ShaderGraph"
     filename_ext = ".xml"
 
-    material_selection: EnumProperty(
-        name="Material",
-        description="Choose a material to export",
-        items=get_materials_callback
+    select_all: BoolProperty(
+        name="Select Everything",
+        default=False,
+        description="Toggle all materials for export",
     )
 
     def draw(self, context):
         layout = self.layout
+        layout.prop(self, "select_all")
+        layout.separator()
         layout.label(text="Select Material to Export:")
-        layout.prop(self, "material_selection")
+
+        box = layout.box()
+
+        for item in context.blend_data.materials:
+            row = box.row()
+            row.prop(item, "export", text=item.name)
 
     def invoke(self, context, event):
         self.filepath = ""
         return context.window_manager.invoke_props_dialog(self)
 
     def check(self, context):
+        for mat in context.blend_data.materials:
+            mat.export = self.select_all
         return True
 
 
     def execute(self, context):
         target_filepath = self.filepath
-        chosen_material = self.material_selection
+        materials_to_export = [item for item in bpy.data.materials if item.export]
 
-        if not chosen_material:
+        if not materials_to_export:
             self.report({'ERROR'}, "No material selected for export.")
             return {'CANCELLED'}
 
-        if chosen_material == 'ALL':
-            materials_to_export = bpy.data.materials
-        else:
-            materials_to_export = [bpy.data.materials.get(chosen_material)]
-
+        for material in materials_to_export:
+            # Here you would implement the actual export logic for each material
+            print(f"{material.name} in {target_filepath} rein (oder in dich)")
         return {'FINISHED'}
 
 def register():
+    bpy.types.Material.export = BoolProperty(name="", default=False)
     bpy.utils.register_class(ExportShaderGraph)
 
 
 def unregister():
     bpy.utils.unregister_class(ExportShaderGraph)
-    
+    del bpy.types.Material.export
