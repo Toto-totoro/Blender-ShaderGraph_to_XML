@@ -17,24 +17,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import bpy
-from bpy.types import Panel
+from bpy.types import Operator
+from . import exporter
 
-#
-# Add additional functions here
-#
 
-class MyPanel(Panel):
-    bl_label = 'Test Panel'
-    bl_space_type = 'PROPERTIES'
-    bl_region_type= 'WINDOW'
-    bl_context = 'export'
-
-    def draw(self, context):
-        row = self.layout.row()
-        row.prop(context.scene, 'my_property')
+def menu_export_button(self, context):
+    self.layout.operator(exporter.ExportShaderGraph.bl_idname, text="ShaderGraph (.xml)")
 
 def register():
-    bpy.utils.register_class(MyPanel)
+    bpy.types.TOPBAR_MT_file_export.append(menu_export_button)
 
 def unregister():
-    bpy.utils.unregister_class(MyPanel)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_export_button)

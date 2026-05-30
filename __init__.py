@@ -37,15 +37,19 @@ import bpy
 #
 
 def register():
-    from . import properties
+    # from . import properties
+    # properties.register()
     from . import ui
-    properties.register()
+    from . import exporter
+    exporter.register()
     ui.register()
 
 def unregister():
-    from . import properties
+    # from . import properties
+    # properties.unregister()
     from . import ui
-    properties.unregister()
+    from . import exporter
+    exporter.unregister()
     ui.unregister()
 
 if __name__ == '__main__':
