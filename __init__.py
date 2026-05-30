@@ -39,8 +39,10 @@ import bpy
 def register():
     from . import properties
     from . import ui
+    from . import exporter
     properties.register()
     ui.register()
+    exporter.register()
 
 def unregister():
     from . import properties

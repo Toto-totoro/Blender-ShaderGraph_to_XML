@@ -18,20 +18,14 @@
 
 import bpy
 from bpy.types import Panel
+from exporter import ExportShaderGraph
 
 #
 # Add additional functions here
 #
 
-class MyPanel(Panel):
-    bl_label = 'Test Panel'
-    bl_space_type = 'PROPERTIES'
-    bl_region_type= 'WINDOW'
-    bl_context = 'export'
-
-    def draw(self, context):
-        row = self.layout.row()
-        row.prop(context.scene, 'my_property')
+def menu_export_button(self, context):
+    self.layout.operator(ExportShaderGraph.bl_idname, text="ShaderGraph (.xml)")
 
 def register():
     bpy.utils.register_class(MyPanel)
