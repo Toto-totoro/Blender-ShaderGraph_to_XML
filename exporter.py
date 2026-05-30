@@ -55,8 +55,8 @@ class ExportShaderGraph(bpy.types.Operator, ExportHelper):
         return context.window_manager.invoke_props_dialog(self)
 
     def check(self, context):
-        for mat in context.blend_data.materials:
-            mat.export = self.select_all
+        for item in context.blend_data.materials:
+            item.export = self.select_all
         return True
 
 
