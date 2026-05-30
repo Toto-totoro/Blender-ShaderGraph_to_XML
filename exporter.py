@@ -22,17 +22,17 @@ from bpy.types import Operator
 
 # List of all materials in file
 def get_materials_callback(self, context):
-    materials = []
+    items = [("ALL", "All Materials", "Export every material in the file")]
     for material in bpy.data.materials:
-        materials.append(material.name)
-    return materials
+        items.append((material.name, material.name, f"Export {material.name}"))
+    return items
 
 class ExportShaderGraph(bpy.types.Operator, ExportHelper):
     bl_idname = "export.shadergraph"
     bl_label = "Export ShaderGraph"
     filename_ext = ".xml"
 
-    material_selection = EnumProperty(
+    material_selection: EnumProperty(
         name="Material",
         description="Choose a material to export",
         items=get_materials_callback
@@ -55,7 +55,7 @@ class ExportShaderGraph(bpy.types.Operator, ExportHelper):
         target_filepath = self.filepath
         chosen_material = self.material_selection
 
-        if chosen_material is None:
+        if not chosen_material:
             self.report({'ERROR'}, "No material selected for export.")
             return {'CANCELLED'}
 
