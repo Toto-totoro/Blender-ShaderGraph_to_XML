@@ -37,18 +37,18 @@ import bpy
 #
 
 def register():
-    from . import properties
+    # from . import properties
+    # properties.register()
     from . import ui
     from . import exporter
-    properties.register()
     exporter.register()
     ui.register()
 
 def unregister():
-    from . import properties
+    # from . import properties
+    # properties.unregister()
     from . import ui
     from . import exporter
-    properties.unregister()
     exporter.unregister()
     ui.unregister()
 

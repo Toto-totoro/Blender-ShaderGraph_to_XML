@@ -17,12 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import bpy
-from bpy.types import Panel
+from bpy.types import Operator
 from . import exporter
 
-#
-# Add additional functions here
-#
 
 def menu_export_button(self, context):
     self.layout.operator(exporter.ExportShaderGraph.bl_idname, text="ShaderGraph (.xml)")
