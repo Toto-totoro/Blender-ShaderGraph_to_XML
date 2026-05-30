@@ -18,7 +18,7 @@ class ExportShaderGraph(bpy.types.Operator, ExportHelper):
     material_selection = EnumProperty(
         name="Material",
         description="Choose a material to export",
-        items=get_materials()
+        # items=get_materials()
         )
     
 def register():

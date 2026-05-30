@@ -18,14 +18,14 @@
 
 import bpy
 from bpy.types import Panel
-from exporter import ExportShaderGraph
+from . import exporter
 
 #
 # Add additional functions here
 #
 
 def menu_export_button(self, context):
-    self.layout.operator(ExportShaderGraph.bl_idname, text="ShaderGraph (.xml)")
+    self.layout.operator(exporter.ExportShaderGraph.bl_idname, text="ShaderGraph (.xml)")
 
 def register():
     bpy.types.TOPBAR_MT_file_export.append(menu_export_button)
