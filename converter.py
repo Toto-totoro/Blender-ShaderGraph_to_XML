@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import bpy
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 
 def convert_materials_to_xml(materials: list) -> str:
     # root element
