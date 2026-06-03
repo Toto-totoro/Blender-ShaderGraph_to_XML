@@ -88,6 +88,7 @@ class ExportShaderGraph2(bpy.types.Operator, ExportHelper):
         materials_to_export = [item for item in bpy.data.materials if item.export]
         xml_string = convert_materials_to_xml(materials_to_export)
 
+        # Generates XML file, stores XML string into generated file,saves it in specified location
         with open(target_filepath, 'w', encoding='utf-8') as file:
             file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             file.write(xml_string)
