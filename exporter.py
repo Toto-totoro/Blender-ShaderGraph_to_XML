@@ -38,6 +38,11 @@ class ExportShaderGraph(bpy.types.Operator, ExportHelper):
         description="Toggle all materials for export",
     )
 
+    old_select_all: BoolProperty(
+        default=False,
+        options={'HIDDEN'}
+    )
+
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "select_all")
@@ -52,11 +57,16 @@ class ExportShaderGraph(bpy.types.Operator, ExportHelper):
 
     def invoke(self, context, event):
         self.filepath = ""
+        self.select_all = False
+        self.old_select_all = False
         return context.window_manager.invoke_props_dialog(self)
 
     def check(self, context):
-        for item in context.blend_data.materials:
-            item.export = self.select_all
+        if self.select_all != self.old_select_all:
+            for item in context.blend_data.materials:
+                item.export = self.select_all
+            self.old_select_all = self.select_all    
+            return True
         return True
 
 
