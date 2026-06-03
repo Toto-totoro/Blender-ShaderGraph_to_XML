@@ -19,7 +19,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty
 from bpy.types import Operator
-from converter import convert_materials_to_xml
+from .converter import convert_materials_to_xml
 
 # UI and logic for selecting materials to export
 class ExportShaderGraph(bpy.types.Operator):
