@@ -27,10 +27,9 @@ from bpy.types import Operator
 #        items.append((material.name, material.name, f"Export {material.name}"))
 #    return items
 
-class ExportShaderGraph(bpy.types.Operator, ExportHelper):
+class ExportShaderGraph(bpy.types.Operator):
     bl_idname = "export.shadergraph"
     bl_label = "Export ShaderGraph"
-    filename_ext = ".xml"
 
     select_all: BoolProperty(
         name="Select Everything",
@@ -71,23 +70,36 @@ class ExportShaderGraph(bpy.types.Operator, ExportHelper):
 
 
     def execute(self, context):
-        target_filepath = self.filepath
-        materials_to_export = [item for item in bpy.data.materials if item.export]
-
+        materials_to_export = any(item.export for item in bpy.data.materials)
         if not materials_to_export:
             self.report({'ERROR'}, "No material selected for export.")
             return {'CANCELLED'}
 
-        for material in materials_to_export:
-            # Here you would implement the actual export logic for each material
-            print(f"{material.name} in {target_filepath} rein (oder in dich)")
+        bpy.ops.export.shadergraph_2('INVOKE_DEFAULT')
         return {'FINISHED'}
 
+class ExportShaderGraph2(bpy.types.Operator, ExportHelper):
+    bl_idname = "export.shadergraph_2"
+    bl_label = "Export ShaderGraph"
+    filename_ext = ".xml"
+
+    def execute(self, context):
+        target_filepath = self.filepath
+        materials_to_export = [item for item in bpy.data.materials if item.export]
+
+        for material in materials_to_export:
+            # Here you would implement the actual export logic for the material
+            print(f"Exporting {material.name} to {target_filepath}")
+
+        return {'FINISHED'}
+        
 def register():
     bpy.types.Material.export = BoolProperty(name="", default=False)
     bpy.utils.register_class(ExportShaderGraph)
+    bpy.utils.register_class(ExportShaderGraph2)
 
 
 def unregister():
+    bpy.utils.unregister_class(ExportShaderGraph2)
     bpy.utils.unregister_class(ExportShaderGraph)
     del bpy.types.Material.export
