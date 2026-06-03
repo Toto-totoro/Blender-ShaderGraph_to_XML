@@ -19,14 +19,9 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty
 from bpy.types import Operator
+from converter import convert_shader_graph_to_xml
 
-# List of all materials in file
-#def get_materials_callback(self, context):
-#    items = [("ALL", "All Materials", "Export every material in the file")]
-#    for material in bpy.data.materials:
-#        items.append((material.name, material.name, f"Export {material.name}"))
-#    return items
-
+# UI and logic for selecting materials to export
 class ExportShaderGraph(bpy.types.Operator):
     bl_idname = "export.shadergraph"
     bl_label = "Export ShaderGraph"
@@ -42,6 +37,7 @@ class ExportShaderGraph(bpy.types.Operator):
         options={'HIDDEN'}
     )
 
+    # draws UI for selecting the materials to export as a checkbox list
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "select_all")
@@ -54,12 +50,14 @@ class ExportShaderGraph(bpy.types.Operator):
             row = box.row()
             row.prop(item, "export", text=item.name)
 
+    # Opens the export dialog when the operator is invoked
     def invoke(self, context, event):
         self.filepath = ""
         self.select_all = False
         self.old_select_all = False
         return context.window_manager.invoke_props_dialog(self)
 
+    # Checks and updates the list of materials to export when the "Select Everything" checkbox is toggled
     def check(self, context):
         if self.select_all != self.old_select_all:
             for item in context.blend_data.materials:
@@ -68,7 +66,7 @@ class ExportShaderGraph(bpy.types.Operator):
             return True
         return True
 
-
+    # Checks if materials are selected for export and if so, opens the file dialog for exporting the shader graph to XML
     def execute(self, context):
         materials_to_export = any(item.export for item in bpy.data.materials)
         if not materials_to_export:
@@ -78,19 +76,22 @@ class ExportShaderGraph(bpy.types.Operator):
         bpy.ops.export.shadergraph_2('INVOKE_DEFAULT')
         return {'FINISHED'}
 
+# UI and logic for exporting the selected materials to XML
 class ExportShaderGraph2(bpy.types.Operator, ExportHelper):
     bl_idname = "export.shadergraph_2"
     bl_label = "Export ShaderGraph"
     filename_ext = ".xml"
 
+    # Executes the export process for the selected materials
     def execute(self, context):
         target_filepath = self.filepath
         materials_to_export = [item for item in bpy.data.materials if item.export]
+        xml_string = convert_materials_to_xml(materials_to_export)
 
-        for material in materials_to_export:
-            # Here you would implement the actual export logic for the material
-            print(f"Exporting {material.name} to {target_filepath}")
-
+        # Generates XML file, stores XML string into generated file,saves it in specified location
+        with open(target_filepath, 'w', encoding='utf-8') as file:
+            file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            file.write(xml_string)
         return {'FINISHED'}
         
 def register():
