@@ -19,6 +19,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty
 from bpy.types import Operator
+from converter import convert_shader_graph_to_xml
 
 # UI and logic for selecting materials to export
 class ExportShaderGraph(bpy.types.Operator):
@@ -85,11 +86,11 @@ class ExportShaderGraph2(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         target_filepath = self.filepath
         materials_to_export = [item for item in bpy.data.materials if item.export]
+        xml_string = convert_materials_to_xml(materials_to_export)
 
-        for material in materials_to_export:
-            # Here you would implement the actual export logic for the material
-            print(f"Exporting {material.name} to {target_filepath}")
-
+        with open(target_filepath, 'w', encoding='utf-8') as file:
+            file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            file.write(xml_string)
         return {'FINISHED'}
         
 def register():
