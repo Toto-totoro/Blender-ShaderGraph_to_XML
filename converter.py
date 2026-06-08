@@ -32,7 +32,7 @@ def convert_shader_graph_to_xml(material, root):
 
     # TODO: node groups should get replaced by their contents. They can be identified by their bl_idname "ShaderNodeGroup" and accessed via bpy.data.node_groups.
     # TODO: validate wether all needed node properties are exported
-    # TODO: the actually relevant properties are currently not exported correctly, they are most likely stored as an array in the 'input' and 'output' properties of the node which are arrays
+    # TODO: check if output format is optimal for info retrieval
 
     # Iterate through the nodes in the material's node tree
     for node in material.node_tree.nodes:
@@ -47,8 +47,25 @@ def convert_shader_graph_to_xml(material, root):
         for prop_name in node.bl_rna.properties.keys():
             if prop_name not in property_selection:  # Skip unneeded properties
                 continue
-            prop_value = getattr(node, prop_name)
-            ET.SubElement(node_element, "Property", name=prop_name).text = str(prop_value)
+            prop = getattr(node, prop_name)
+
+            if isinstance(prop, bpy.types.bpy_prop_collection):
+                collection_element = ET.SubElement(node_element, "Property", name=prop_name)
+                for item in prop.keys():
+                    if prop.get(item) is None:
+                        continue
+                    item_element = ET.SubElement(collection_element, "Item", name=prop.get(item).name)
+                    if hasattr(prop.get(item), 'default_value'):
+                        item_value = prop.get(item).default_value
+                        if isinstance(item_value, bpy.types.bpy_prop_array):
+                            item_value = [str(v) for v in item_value]
+                        item_element.text = str(item_value)
+
+            elif isinstance(prop, (str, int, float, bool)):
+                ET.SubElement(node_element, "Property", name=prop_name).text = str(prop)
+
+            else:
+                print(f"Unsupported property type for {prop_name} in node {node.name}: {type(prop)}")
 
     # TODO: sort links in graph order
     # Store node links
