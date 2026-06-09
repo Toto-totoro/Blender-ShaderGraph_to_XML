@@ -31,7 +31,6 @@ def convert_shader_graph_to_xml(material, root):
     material_element = ET.SubElement(root, "Material", name=material.name)
 
     # TODO: node groups should get replaced by their contents. They can be identified by their bl_idname "ShaderNodeGroup" and accessed via bpy.data.node_groups.
-    # TODO: validate wether all needed node properties are exported
     # TODO: check if output format is optimal for info retrieval
 
     # Iterate through the nodes in the material's node tree
@@ -40,12 +39,54 @@ def convert_shader_graph_to_xml(material, root):
 
         # Add properties of the node as sub-elements
 
-        property_selection = {
-            'type', 'inputs', 'outputs', 'internal_links', 'node_tree'
+        """
+        Replaced property selection by filtering out, since many nodes have special properties
+        and unneccesary ones are shared by most (if not all)
+        """
+        # property_selection = {
+        #     'type', 'inputs', 'outputs', 'internal_links', 'node_tree'
+        # }
+        
+
+
+        filter_unnecessary = {
+        'width',
+        'height',
+        'use_custom_color',
+        'color_tag',
+        'select',
+        'show_options',
+        'show_preview',
+        'hide',
+        'show_texture',
+        'bl_description',
+        'bl_icon',
+        'bl_static_type',
+        'bl_width_default',
+        'bl_width_min',
+        'bl_width_max',
+        'bl_height_default',
+        'bl_height_min',
+        'bl_height_max',
+
+        # these are currently filtered out by isinstance checking anyway lol
+        'rna_type',
+        'location',
+        'location_absolute',
+        'dimensions',
+        'parent', #TODO might be useful, don't know, investigate
+        'color'
         }
 
+
+        # TODO: validate wether all needed node properties are exported
+        # TODO: list of currently unsupported properties (details at end of file):
+        """
+        texture_mapping, color_mapping, image, image_user, sun_direction, object, mapping
+        """
+
         for prop_name in node.bl_rna.properties.keys():
-            if prop_name not in property_selection:  # Skip unneeded properties
+            if prop_name in filter_unnecessary:  # filter out unnecessary properties
                 continue
             prop = getattr(node, prop_name)
 
@@ -81,3 +122,47 @@ def convert_shader_graph_to_xml(material, root):
             to_node=link.to_node.name,
             to_socket=link.to_socket.name,
         )
+
+"""
+Unsupported property type for texture_mapping in node Brick Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Brick Texture: <class 'bpy.types.ColorMapping'>
+
+Unsupported property type for texture_mapping in node Checker Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Checker Texture: <class 'bpy.types.ColorMapping'>
+
+Unsupported property type for texture_mapping in node Gradient Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Gradient Texture: <class 'bpy.types.ColorMapping'>
+
+Unsupported property type for texture_mapping in node Gabor Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Gabor Texture: <class 'bpy.types.ColorMapping'>
+
+Unsupported property type for image in node Image Texture: <class 'NoneType'>
+Unsupported property type for texture_mapping in node Image Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Image Texture: <class 'bpy.types.ColorMapping'>
+Unsupported property type for image_user in node Image Texture: <class 'bpy.types.ImageUser'>
+
+Unsupported property type for texture_mapping in node Magic Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Magic Texture: <class 'bpy.types.ColorMapping'>
+
+Unsupported property type for texture_mapping in node Noise Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Noise Texture: <class 'bpy.types.ColorMapping'>
+
+Unsupported property type for texture_mapping in node Noise Texture.001: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Noise Texture.001: <class 'bpy.types.ColorMapping'>
+
+Unsupported property type for texture_mapping in node Sky Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Sky Texture: <class 'bpy.types.ColorMapping'>
+Unsupported property type for sun_direction in node Sky Texture: <class 'Vector'>
+
+Unsupported property type for texture_mapping in node Voronoi Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Voronoi Texture: <class 'bpy.types.ColorMapping'>
+
+Unsupported property type for texture_mapping in node Wave Texture: <class 'bpy.types.TexMapping'>
+Unsupported property type for color_mapping in node Wave Texture: <class 'bpy.types.ColorMapping'>
+
+Unsupported property type for object in node Texture Coordinate: <class 'NoneType'>
+
+Unsupported property type for mapping in node RGB Curves: <class 'bpy.types.CurveMapping'>
+
+Unsupported property type for mapping in node Float Curve: <class 'bpy.types.CurveMapping'>
+"""
