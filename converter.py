@@ -91,19 +91,21 @@ def convert_shader_graph_to_xml(material, root):
             prop = getattr(node, prop_name)
 
             if isinstance(prop, bpy.types.bpy_prop_collection):
-                collection_element = ET.SubElement(node_element, "Property", name=prop_name)
+                collection_element = ET.SubElement(node_element, "Property", name=prop_name, type=type(prop).__name__)
                 for item in prop.keys():
                     if prop.get(item) is None:
                         continue
-                    item_element = ET.SubElement(collection_element, "Item", name=prop.get(item).name)
-                    if hasattr(prop.get(item), 'default_value'):
-                        item_value = prop.get(item).default_value
-                        if isinstance(item_value, bpy.types.bpy_prop_array):
-                            item_value = [str(v) for v in item_value]
-                        item_element.text = str(item_value)
+                    item = prop.get(item)
+                    item_element = ET.SubElement(collection_element, "Item", name=item.name, type=str(getattr(item, 'type', None)))
+                    if hasattr(item, 'default_value'):
+                        if isinstance(item.default_value, bpy.types.bpy_prop_array):
+                            for v in item.default_value:
+                                ET.SubElement(item_element, "Value", data=str(v))
+                        else:
+                            item_element.set("value", str(item.default_value))
 
             elif isinstance(prop, (str, int, float, bool)):
-                ET.SubElement(node_element, "Property", name=prop_name).text = str(prop)
+                ET.SubElement(node_element, "Property", name=prop_name, type=type(prop).__name__, value=str(prop))
 
             else:
                 print(f"Unsupported property type for {prop_name} in node {node.name}: {type(prop)}")
