@@ -22,6 +22,9 @@ import traceback
 from lxml import etree as ET
 
 def convert_node_groups_to_xml(node_groups: list) -> str:
+    """
+    Converts a list of Blender node groups into a serialized XML string representation with lxml etree.
+    """
     # root element
     root = ET.Element("BlenderNodeGraphs")
 
@@ -32,7 +35,10 @@ def convert_node_groups_to_xml(node_groups: list) -> str:
 
     return ET.tostring(root, pretty_print=True).decode()
 
-def convert_nodegroup_to_xml(nodegroup, root, graph_id):
+def convert_nodegroup_to_xml(nodegroup, root, graph_id) -> int:
+    """
+    Converts a single Blender node group into an XML element and appends it to the provided root element.
+    """
     nodegroup_element = ET.SubElement(root, "Graph", name=nodegroup.name, id=str(graph_id))
 
     # TODO: check if output format is optimal for info retrieval
