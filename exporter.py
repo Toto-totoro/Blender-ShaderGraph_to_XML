@@ -19,8 +19,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty, BoolProperty
 from bpy.types import Operator
-from .geometry_converter import convert_node_groups_to_xml
-from .shader_converter import convert_materials_to_xml
+from .converter import convert_node_graphs_to_xml
 
 ###############
 # Node Groups #
@@ -91,7 +90,7 @@ class ExportNodeGroupsExecutor(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         target_filepath = self.filepath
         node_groups_to_export = [item for item in bpy.data.node_groups if item.export]
-        xml_string = convert_node_groups_to_xml(node_groups_to_export)
+        xml_string = convert_node_graphs_to_xml(node_groups_to_export)
 
         # Generates XML file, stores XML string into generated file,saves it in specified location
         with open(target_filepath, 'w', encoding='utf-8') as file:
@@ -169,7 +168,7 @@ class ExportMaterialsExecutor(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         target_filepath = self.filepath
         materials_to_export = [item for item in bpy.data.materials if item.export]
-        xml_string = convert_materials_to_xml(materials_to_export)
+        xml_string = convert_node_graphs_to_xml(materials_to_export)
 
         # Generates XML file, stores XML string into generated file,saves it in specified location
         with open(target_filepath, 'w', encoding='utf-8') as file:
